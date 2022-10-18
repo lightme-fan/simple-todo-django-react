@@ -6,6 +6,8 @@ const InputStyle = styled.input`
     height: 51px;
     font-size: 20px;
     padding: 4px 10px;
+    border: 1px solid;
+    border-radius: 5px;
 
     ::placeholder,
     ::-webkit-input-placeholder {

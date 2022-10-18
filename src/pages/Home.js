@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Select, Button } from "antd";
 import 'antd/dist/antd.css'
+import axios from "axios";
 import styled from "styled-components";
 import { Input, Form, ButtonComponent, List, Label } from "../components";
 const { Option } = Select;
@@ -54,10 +55,17 @@ const Home = () => {
         const todo = {
             name: value,
             id: Date.now(),
+            description: value,
             isDone: false,
-            key: Math.random(),
         }
         setTodos((prev) => [...prev, todo]);
+        axios
+            .post("http://localhost:8000/api/todos/", todo)
+            .then((res) => {
+                setTodos(res.data);
+            }).catch((err) => {
+                console.log("Err", err)
+            })
         setValue("");
         e.target.reset();
     };
@@ -73,8 +81,9 @@ const Home = () => {
         setTodos(completedTodo);
     }
 
-    const handleDeleteTodo = (id) => {
+    const handleDeleteTodo = async (id) => {
         const removedTodo = todos.filter(t => t.id !== id)
+        const removed = todos.find(t => t.id === id)
         setTodos(removedTodo);
     }
 
@@ -108,8 +117,17 @@ const Home = () => {
         );
     };
 
-    console.log(todos);
-  return (
+    const fetchTodos = async () => {
+        const response = await fetch("http://localhost:8000/api/todos/");
+        const data = await response.json()
+        setTodos(data);
+    }
+
+    useEffect(() => {
+        fetchTodos()
+    }, []);
+
+    return (
     <div>
         <Form onSubmit={handleSubmitForm}>            
             <Input

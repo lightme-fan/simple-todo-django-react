@@ -4,6 +4,7 @@ import 'antd/dist/antd.css'
 import axios from "axios";
 import styled from "styled-components";
 import { Input, Form, ButtonComponent, List, Label } from "../components";
+import { v4 as uuidv4 } from 'uuid'
 const { Option } = Select;
 
 const ListItem = styled.li`
@@ -42,7 +43,7 @@ const FormModal = styled.div`
 const Checkbox = styled.input`
     cursor: pointer;
 `
-
+const BASE_URL = "http://localhost:8000/api/todos/"
 const Home = () => {
     const [ value, setValue ] = useState("");
     const [ todos, setTodos ] = useState([]);
@@ -54,17 +55,16 @@ const Home = () => {
         e.preventDefault();
         const todo = {
             name: value,
-            id: Date.now(),
+            id: uuidv4,
             description: value,
             isDone: false,
         }
-        setTodos((prev) => [...prev, todo]);
         axios
-            .post("http://localhost:8000/api/todos/", todo)
+        .post(BASE_URL, todo)
             .then((res) => {
-                setTodos(res.data);
+                setTodos((prev) => [...prev, res.data]);
             }).catch((err) => {
-                console.log("Err", err)
+                console.log(err);
             })
         setValue("");
         e.target.reset();
@@ -72,19 +72,22 @@ const Home = () => {
 
     const handleCheckTodo = (id) => {
         setChecked(!checked)
-        const completedTodo = todos.map(t => {
-            return t.id === id ? {
-                ...t,
-                isDone: !checked,
-            } : t
-        })
-        setTodos(completedTodo);
+        let completedTodo = todos.find(t => t.id === id);
+        completedTodo = {...completedTodo, isDone: checked}
+        axios
+            .put(`${BASE_URL}${id}/`, completedTodo)
+            .then((res) => {
+                const updatedTodo = todos.map((item) => (
+                    item.id === res.data.id ? res.data : item
+                ));
+                setTodos(updatedTodo);
+            }).catch((err) => console.log(err))
     }
 
-    const handleDeleteTodo = async (id) => {
+    const handleDeleteTodo = (id) => {
         const removedTodo = todos.filter(t => t.id !== id)
-        const removed = todos.find(t => t.id === id)
         setTodos(removedTodo);
+        axios.delete(`${BASE_URL}${id}/`)
     }
 
     const showModal = (id) => {
@@ -111,14 +114,16 @@ const Home = () => {
 
     const handleOk = (id) => {
         setIsModalOpen(false);
-        Object.assign(
-            todos.find((t) => t.id === id),
-            edtiTodo
-        );
+        axios
+            .put(`${BASE_URL}${id}/`, edtiTodo)
+            .then((res) => {
+                const updatedTodo = todos.map((item) => item.id === res.data.id ? res.data : item);
+                setTodos(updatedTodo);
+            }).catch((err) => console.log(err))
     };
 
     const fetchTodos = async () => {
-        const response = await fetch("http://localhost:8000/api/todos/");
+        const response = await fetch(BASE_URL);
         const data = await response.json()
         setTodos(data);
     }
@@ -144,7 +149,7 @@ const Home = () => {
                 <Item>All Actions</Item>
             </ListItem>
             <List>
-                {todos.map(t => (
+                {todos && todos.map(t => (
                     <ListItem key={t.key}>
                         <div>{t.name}</div>
                         <Completed>

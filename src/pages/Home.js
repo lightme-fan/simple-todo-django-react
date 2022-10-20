@@ -132,6 +132,7 @@ const Home = () => {
         fetchTodos()
     }, []);
 
+    console.log(todos);
     return (
     <div>
         <Form onSubmit={handleSubmitForm}>            

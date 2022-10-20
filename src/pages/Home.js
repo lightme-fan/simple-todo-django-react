@@ -72,15 +72,15 @@ const Home = () => {
 
     const handleCheckTodo = (id) => {
         setChecked(!checked)
-        let completedTodo = todos.find(t => t.id === id);
-        completedTodo = {...completedTodo, isDone: checked}
+        let completedTodo = {...todos.find(t => t.id === id), isDone: checked}
+        
         axios
             .put(`${BASE_URL}${id}/`, completedTodo)
             .then((res) => {
-                const updatedTodo = todos.map((item) => (
+                const updatedTodos = todos.map((item) => (
                     item.id === res.data.id ? res.data : item
                 ));
-                setTodos(updatedTodo);
+                setTodos(updatedTodos);
             }).catch((err) => console.log(err))
     }
 
@@ -132,7 +132,6 @@ const Home = () => {
         fetchTodos()
     }, []);
 
-    console.log(todos);
     return (
     <div>
         <Form onSubmit={handleSubmitForm}>            

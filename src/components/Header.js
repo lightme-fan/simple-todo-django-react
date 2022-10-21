@@ -22,9 +22,9 @@ const Header = () => {
                     />
                 </Link>
             </div>
-            <Button ghost type="primary">
+            {/* <Button ghost type="primary">
                 <Link to={"/login"}>Log in</Link>
-            </Button>
+            </Button> */}
         </HeaderStyle>
     )
 }

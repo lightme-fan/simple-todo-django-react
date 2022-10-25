@@ -5,6 +5,7 @@ const FormStyle = styled.form`
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 `
 
 const Form = ({ children, onSubmit }) => {

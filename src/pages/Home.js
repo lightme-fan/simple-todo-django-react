@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactPaginate from 'react-paginate';
 import { Modal, Select, Button } from "antd";
 import 'antd/dist/antd.css'
 import axios from "axios";
@@ -9,7 +10,7 @@ const { Option } = Select;
 
 const ListItem = styled.li`
     display: grid;
-    grid-template-columns: 1fr 106px 103px;
+    grid-template-columns: 1fr 106px 138px;
     gap: 16px;
     padding: 10px 0;
     border-bottom: 1px solid;
@@ -44,12 +45,15 @@ const Checkbox = styled.input`
     cursor: pointer;
 `
 const BASE_URL = "http://localhost:8000/api/todos/"
-const Home = () => {
+const Home = ({ itemsPerPage }) => {
     const [ value, setValue ] = useState("");
     const [ todos, setTodos ] = useState([]);
-    const [ checked, setChecked ] = useState(false)
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [ edtiTodo, setEditTodo ] = useState(null);
+
+    // Pagination
+    const [pageCount, setPageCount] = useState(0);
+    const [itemOffset, setItemOffset] = useState(0);
 
     const handleSubmitForm = (e) => {
         e.preventDefault();
@@ -71,8 +75,11 @@ const Home = () => {
     };
 
     const handleCheckTodo = (id) => {
-        setChecked(!checked)
-        let completedTodo = {...todos.find(t => t.id === id), isDone: checked}
+        let completedTodo = todos.find(t => t.id === id)
+        completedTodo = {
+            ...completedTodo,
+            isDone: !completedTodo.isDone
+        }
         
         axios
             .put(`${BASE_URL}${id}/`, completedTodo)
@@ -83,6 +90,7 @@ const Home = () => {
                 setTodos(updatedTodos);
             }).catch((err) => console.log(err))
     }
+
 
     const handleDeleteTodo = (id) => {
         const removedTodo = todos.filter(t => t.id !== id)
@@ -105,7 +113,6 @@ const Home = () => {
     }
     
     const handleSelectChange = (value) => {
-        setChecked(value);
         setEditTodo((prev) => ({
             ...prev,
             isDone: value,
@@ -129,6 +136,17 @@ const Home = () => {
     }
 
     useEffect(() => {
+        const endOffset = itemOffset + itemsPerPage;
+        setTodos(todos && todos.slice(itemOffset, endOffset));
+        setPageCount(Math.ceil(todos && todos.length / itemsPerPage));
+    }, [itemOffset, itemsPerPage])
+
+    const handlePageClick = (event) => {
+        const newOffset = todos && (event.selected * itemsPerPage) % todos.length;
+        setItemOffset(newOffset);
+    };
+
+    useEffect(() => {
         fetchTodos()
     }, []);
 
@@ -150,10 +168,10 @@ const Home = () => {
             </ListItem>
             <List>
                 {todos && todos.map(t => (
-                    <ListItem key={t.key}>
+                    <ListItem key={t.id}>
                         <div>{t.name}</div>
                         <Completed>
-                            <span>{t.isDone === false ? "Not yet" : "Yes"}</span>
+                            <span>{t.isDone === false ? "No" : "Yes"}</span>
                             <Checkbox type="checkbox" onChange={() => handleCheckTodo(t.id)} checked={t.isDone} />
                         </Completed>
                         <Actions>
@@ -163,6 +181,15 @@ const Home = () => {
                     </ListItem>
                 ))}
             </List>
+            <ReactPaginate
+                breakLabel="..."
+                nextLabel="next >"
+                onPageChange={handlePageClick}
+                pageRangeDisplayed={5}
+                pageCount={pageCount}
+                previousLabel="< previous"
+                renderOnZeroPageCount={null}
+            />
         </Todos>
         <Modal
             title={`Edit todo`}

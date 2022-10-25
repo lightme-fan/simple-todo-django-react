@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { Form, ButtonComponent, Label, Input } from "../components";
@@ -9,12 +9,6 @@ const Wrapper = styled.div`
 `
 
 const Signup = () => {
-    const [ name, setName ] = useState("");
-    const [ email, setEmail ] = useState(null);
-    const [ number, setNumber ] = useState(null);
-    const [ password, setPassword ] = useState(null);
-    const [ comfirmPassword, setComfirmPassword ] = useState(null);
-
     return (
         <Form>
             <Wrapper>

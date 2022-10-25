@@ -21,7 +21,7 @@ const Login = () => {
                     <Input type="password" placeholder={"Type your password"} />
                 </Label>
                 <ButtonComponent name={"Log in"} />
-                <div>Haven't you signed up ye? If so, please <Link to={"/signup"}>sign up</Link></div>
+                <div>Haven't you signed up yet? If so, please <Link to={"/signup"}>sign up</Link></div>
             </Wrapper>
         </Form>
     )

@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Getting Started with Create React App and Django - Python
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -7,6 +7,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 In the project directory, you can run:
 
 ## Start backend
+- `pip3 install -r requirements.txt`
+
+Then open a new Tab on your terminal
 - `cd backeend/`
 - `pipenv shell`
 - `cd backend/`

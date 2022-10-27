@@ -1,5 +1,5 @@
 import React from "react";
-import { Image } from "antd";
+import { Image, Button } from "antd";
 import styled from "styled-components";
 import logo from "../img/logo.png"
 import { Link } from "react-router-dom";
@@ -22,9 +22,9 @@ const Header = () => {
                     />
                 </Link>
             </div>
-            {/* <Button ghost type="primary">
+            <Button ghost type="primary">
                 <Link to={"/login"}>Log in</Link>
-            </Button> */}
+            </Button>
         </HeaderStyle>
     )
 }

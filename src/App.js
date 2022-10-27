@@ -2,17 +2,17 @@ import React from 'react';
 import styled from 'styled-components';
 import './App.css';
 import { Header } from './components';
-import { Home } from './pages';
+import { Home, Login, Signup } from './pages';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 const Container = styled.div`
-  max-width: 1602px;
+  max-width: 1462px;
   margin: auto;
   padding: 16px;
 `
 
 const Wrapper = styled.div`
-  max-width: 950px;
+  max-width: 824px;
   margin: 125px auto 60px auto;
   padding: 90px 16px 26px 16px;
   box-shadow: -1px 0px 19px -3px rgba(0,0,0,0.51) inset;
@@ -34,12 +34,12 @@ const App = () => {
           <Routes>
             <Route path="/" exact element={<Home itemsPerPage={5} />} />
           </Routes>
-          {/* <Routes>
+          <Routes>
             <Route path="/login" element={<Login />} />
           </Routes>
           <Routes>
             <Route path="/signup" element={<Signup />} />
-          </Routes> */}
+          </Routes>
         </Wrapper>
       </Container>
     </Router>

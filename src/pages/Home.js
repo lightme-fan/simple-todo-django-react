@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-import ReactPaginate from 'react-paginate';
+import React from "react";
 import { Modal, Select, Button } from "antd";
 import 'antd/dist/antd.css'
-import axios from "axios";
 import styled from "styled-components";
 import { Input, Form, ButtonComponent, List, Label } from "../components";
-import { v4 as uuidv4 } from 'uuid'
+import { useTodo } from "../hooks";
+
 const { Option } = Select;
 
 const ListItem = styled.li`
@@ -44,111 +43,23 @@ const FormModal = styled.div`
 const Checkbox = styled.input`
     cursor: pointer;
 `
-const BASE_URL = "http://localhost:8000/api/todos/"
-const Home = ({ itemsPerPage }) => {
-    const [ value, setValue ] = useState("");
-    const [ todos, setTodos ] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [ edtiTodo, setEditTodo ] = useState(null);
 
-    // Pagination
-    const [pageCount, setPageCount] = useState(0);
-    const [itemOffset, setItemOffset] = useState(0);
-
-    const handleSubmitForm = (e) => {
-        e.preventDefault();
-        const todo = {
-            name: value,
-            id: uuidv4,
-            description: value,
-            isDone: false,
-        }
-        axios
-        .post(BASE_URL, todo)
-            .then((res) => {
-                setTodos((prev) => [...prev, res.data]);
-            }).catch((err) => {
-                console.log(err);
-            })
-        setValue("");
-        e.target.reset();
-    };
-
-    const handleCheckTodo = (id) => {
-        let completedTodo = todos.find(t => t.id === id)
-        completedTodo = {
-            ...completedTodo,
-            isDone: !completedTodo.isDone
-        }
-        
-        axios
-            .put(`${BASE_URL}${id}/`, completedTodo)
-            .then((res) => {
-                const updatedTodos = todos.map((item) => (
-                    item.id === res.data.id ? res.data : item
-                ));
-                setTodos(updatedTodos);
-            }).catch((err) => console.log(err))
-    }
-
-
-    const handleDeleteTodo = (id) => {
-        const removedTodo = todos.filter(t => t.id !== id)
-        setTodos(removedTodo);
-        axios.delete(`${BASE_URL}${id}/`)
-    }
-
-    const showModal = (id) => {
-        setIsModalOpen(true);
-        const item = todos.find(t => t.id === id)
-        setEditTodo(item);
-    };
-
-    const handleEditChange = (e) => {
-        setValue(e.target.value);
-        setEditTodo((prev) => ({
-            ...prev,
-            name: e.target.value,
-        }))
-    }
-    
-    const handleSelectChange = (value) => {
-        setEditTodo((prev) => ({
-            ...prev,
-            isDone: value,
-        }))
-    };
-
-    const handleOk = (id) => {
-        setIsModalOpen(false);
-        axios
-            .put(`${BASE_URL}${id}/`, edtiTodo)
-            .then((res) => {
-                const updatedTodo = todos.map((item) => item.id === res.data.id ? res.data : item);
-                setTodos(updatedTodo);
-            }).catch((err) => console.log(err))
-    };
-
-    const fetchTodos = async () => {
-        const response = await fetch(BASE_URL);
-        const data = await response.json()
-        setTodos(data);
-    }
-
-    useEffect(() => {
-        const endOffset = itemOffset + itemsPerPage;
-        setTodos(todos && todos.slice(itemOffset, endOffset));
-        setPageCount(Math.ceil(todos && todos.length / itemsPerPage));
-    }, [itemOffset, itemsPerPage])
-
-    const handlePageClick = (event) => {
-        const newOffset = todos && (event.selected * itemsPerPage) % todos.length;
-        setItemOffset(newOffset);
-    };
-
-    useEffect(() => {
-        fetchTodos()
-    }, []);
+const Home = () => {
+    const {
+        value,
+        todos,
+        isModalOpen,
+        edtiTodo,
+        setValue,
+        setIsModalOpen,
+        handleSubmitForm,
+        handleCheckTodo,
+        handleDeleteTodo,
+        showModal,
+        handleEditChange,
+        handleSelectChange,
+        handleOk,
+    } = useTodo()
 
     return (
     <div>
@@ -181,15 +92,6 @@ const Home = ({ itemsPerPage }) => {
                     </ListItem>
                 ))}
             </List>
-            <ReactPaginate
-                breakLabel="..."
-                nextLabel="next >"
-                onPageChange={handlePageClick}
-                pageRangeDisplayed={5}
-                pageCount={pageCount}
-                previousLabel="< previous"
-                renderOnZeroPageCount={null}
-            />
         </Todos>
         <Modal
             title={`Edit todo`}

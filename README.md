@@ -26,6 +26,8 @@ Open a new tab on the terminal and do the following
 - `yarn install`
 - `yarn start`
 
+NOTE: Before running `yarn install`, please the `yarn.lock` from the directory.
+
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
